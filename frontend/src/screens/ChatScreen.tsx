@@ -1,8 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import {
   FlatList,
-  KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -10,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, radii, spacing } from '../theme';
 import { useAuth } from '../context/AuthContext';
 import { SocketProvider, useChatSocket } from '../context/SocketContext';
@@ -58,7 +56,7 @@ function ChatScreenInner() {
   return (
     <SignalBackground>
       <StatusBar style="light" />
-      <SafeAreaView style={styles.flex} edges={['top']}>
+      <View style={[styles.flex, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
         <View style={styles.header}>
           <View>
             <Text style={styles.headerTitle}>Frequency</Text>
@@ -69,59 +67,54 @@ function ChatScreenInner() {
           </TouchableOpacity>
         </View>
 
-        <KeyboardAvoidingView
-          style={styles.flex}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-          <FlatList
-            ref={listRef}
-            data={messages}
-            keyExtractor={(item) => item.id}
-            renderItem={renderItem}
-            contentContainerStyle={styles.listContent}
-            onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
-            ListEmptyComponent={
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>No transmissions yet</Text>
-                <Text style={styles.emptySubtitle}>Send the first message on the channel.</Text>
-              </View>
-            }
+        <FlatList
+          ref={listRef}
+          data={messages}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
+          onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyTitle}>No transmissions yet</Text>
+              <Text style={styles.emptySubtitle}>Send the first message on the channel.</Text>
+            </View>
+          }
+        />
+
+        <View style={styles.typingSlot}>
+          {typingUser && (
+            <Text style={styles.typingText}>{typingUser.username} is transmitting…</Text>
+          )}
+        </View>
+
+        <View style={styles.composer}>
+          <TextInput
+            value={draft}
+            onChangeText={handleChangeText}
+            placeholder="Type a message…"
+            placeholderTextColor={colors.textSecondary}
+            style={styles.composerInput}
+            multiline
+            maxLength={2000}
           />
-
-          <View style={styles.typingSlot}>
-            {typingUser && (
-              <Text style={styles.typingText}>{typingUser.username} is transmitting…</Text>
-            )}
-          </View>
-
-          <View style={[styles.composer, { paddingBottom: spacing.sm + insets.bottom }]}>
-            <TextInput
-              value={draft}
-              onChangeText={handleChangeText}
-              placeholder="Type a message…"
-              placeholderTextColor={colors.textSecondary}
-              style={styles.composerInput}
-              multiline
-              maxLength={2000}
-            />
-            <TouchableOpacity
-              onPress={handleSend}
-              disabled={!draft.trim()}
-              style={[styles.sendButton, !draft.trim() && styles.sendButtonDisabled]}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.sendButtonText}>Send</Text>
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
-      </SafeAreaView>
+          <TouchableOpacity
+            onPress={handleSend}
+            disabled={!draft.trim()}
+            style={[styles.sendButton, !draft.trim() && styles.sendButtonDisabled]}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.sendButtonText}>Send</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SignalBackground>
   );
 }
 
 export default function ChatScreen() {
   const { user } = useAuth();
-  if (!user) return null; // guarded by navigation, but keeps types happy
+  if (!user) return null;
   return (
     <SocketProvider user={user}>
       <ChatScreenInner />
