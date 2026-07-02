@@ -1,6 +1,8 @@
 import React, { useCallback, useRef, useState } from 'react';
 import {
   FlatList,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -55,57 +57,66 @@ function ChatScreenInner() {
   return (
     <SignalBackground>
       <StatusBar style="light" />
-      <SafeAreaView style={styles.flex} edges={['top', 'bottom']}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.headerTitle}>Frequency</Text>
-            <ConnectionBar status={status} onlineCount={onlineUsers.length} />
-          </View>
-          <TouchableOpacity onPress={logout} style={styles.logoutButton} activeOpacity={0.7}>
-            <Text style={styles.logoutText}>DISCONNECT</Text>
-          </TouchableOpacity>
-        </View>
-
-        <FlatList
-          ref={listRef}
-          data={messages}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
-          onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
-          ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyTitle}>No transmissions yet</Text>
-              <Text style={styles.emptySubtitle}>Send the first message on the channel.</Text>
+      <SafeAreaView style={styles.flex} edges={['top', 'left', 'right']}>
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={0}
+        >
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.headerTitle}>Frequency</Text>
+              <ConnectionBar status={status} onlineCount={onlineUsers.length} />
             </View>
-          }
-        />
+            <TouchableOpacity onPress={logout} style={styles.logoutButton} activeOpacity={0.7}>
+              <Text style={styles.logoutText}>DISCONNECT</Text>
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.typingSlot}>
-          {typingUser && (
-            <Text style={styles.typingText}>{typingUser.username} is transmitting…</Text>
-          )}
-        </View>
-
-        <View style={styles.composer}>
-          <TextInput
-            value={draft}
-            onChangeText={handleChangeText}
-            placeholder="Type a message…"
-            placeholderTextColor={colors.textSecondary}
-            style={styles.composerInput}
-            multiline
-            maxLength={2000}
+          <FlatList
+            ref={listRef}
+            data={messages}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            contentContainerStyle={styles.listContent}
+            keyboardShouldPersistTaps="handled"
+            onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: true })}
+            ListEmptyComponent={
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyTitle}>No transmissions yet</Text>
+                <Text style={styles.emptySubtitle}>Send the first message on the channel.</Text>
+              </View>
+            }
           />
-          <TouchableOpacity
-            onPress={handleSend}
-            disabled={!draft.trim()}
-            style={[styles.sendButton, !draft.trim() && styles.sendButtonDisabled]}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.sendButtonText}>Send</Text>
-          </TouchableOpacity>
-        </View>
+
+          <View style={styles.typingSlot}>
+            {typingUser && (
+              <Text style={styles.typingText}>{typingUser.username} is transmitting…</Text>
+            )}
+          </View>
+
+          <SafeAreaView edges={['bottom']} style={styles.bottomSafeArea}>
+            <View style={styles.composer}>
+              <TextInput
+                value={draft}
+                onChangeText={handleChangeText}
+                placeholder="Type a message…"
+                placeholderTextColor={colors.textSecondary}
+                style={styles.composerInput}
+                multiline
+                maxLength={2000}
+              />
+              <TouchableOpacity
+                onPress={handleSend}
+                disabled={!draft.trim()}
+                style={[styles.sendButton, !draft.trim() && styles.sendButtonDisabled]}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.sendButtonText}>Send</Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </SignalBackground>
   );
@@ -178,6 +189,9 @@ const styles = StyleSheet.create({
   typingSlot: {
     minHeight: 20,
     paddingHorizontal: spacing.lg,
+  },
+  bottomSafeArea: {
+    backgroundColor: 'transparent',
   },
   typingText: {
     fontFamily: fonts.mono,
