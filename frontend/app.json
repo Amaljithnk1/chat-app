@@ -20,7 +20,7 @@
     },
     "android": {
       "package": "com.example.frequencychat",
-      "softwareKeyboardLayoutMode": "resize",
+      "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0E2A2E"
