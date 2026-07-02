@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, fonts, radii, spacing } from '../theme';
 import { useAuth } from '../context/AuthContext';
 import { SocketProvider, useChatSocket } from '../context/SocketContext';
@@ -23,7 +23,6 @@ function ChatScreenInner() {
   const [draft, setDraft] = useState('');
   const listRef = useRef<FlatList<ChatMessage>>(null);
   const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const insets = useSafeAreaInsets();
 
   const handleChangeText = useCallback(
     (text: string) => {
@@ -56,10 +55,7 @@ function ChatScreenInner() {
   return (
     <SignalBackground>
       <StatusBar style="light" />
-      {/* No KeyboardAvoidingView — softwareKeyboardLayoutMode "resize" in
-          app.json lets Android handle the keyboard natively. Adding
-          KeyboardAvoidingView on top causes double compensation and a gap. */}
-      <View style={[styles.flex, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+      <SafeAreaView style={styles.flex} edges={['top', 'bottom']}>
         <View style={styles.header}>
           <View>
             <Text style={styles.headerTitle}>Frequency</Text>
@@ -110,7 +106,7 @@ function ChatScreenInner() {
             <Text style={styles.sendButtonText}>Send</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
     </SignalBackground>
   );
 }
