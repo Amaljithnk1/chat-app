@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const http = require('http');
+const https = require('https');
 const { Server } = require('socket.io');
 
 const { createApp } = require('./src/app');
@@ -24,4 +25,17 @@ registerSocketHandlers(io);
 httpServer.listen(PORT, () => {
   console.log(`Chat backend listening on http://0.0.0.0:${PORT}`);
   console.log(`Socket.IO ready. REST API mounted under /api`);
+
+  // Keep-alive ping for Render free tier — prevents the service from
+  // spinning down after 15 minutes of inactivity.
+  const RENDER_URL = process.env.RENDER_EXTERNAL_URL;
+  if (RENDER_URL) {
+    setInterval(() => {
+      https.get(`${RENDER_URL}/health`, (res) => {
+        console.log(`[keep-alive] ping ${res.statusCode}`);
+      }).on('error', (err) => {
+        console.warn(`[keep-alive] ping failed: ${err.message}`);
+      });
+    }, 14 * 60 * 1000); // every 14 minutes
+  }
 });
