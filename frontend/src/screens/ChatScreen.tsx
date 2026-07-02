@@ -56,6 +56,9 @@ function ChatScreenInner() {
   return (
     <SignalBackground>
       <StatusBar style="light" />
+      {/* No KeyboardAvoidingView — softwareKeyboardLayoutMode "resize" in
+          app.json lets Android handle the keyboard natively. Adding
+          KeyboardAvoidingView on top causes double compensation and a gap. */}
       <View style={[styles.flex, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
         <View style={styles.header}>
           <View>
