@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts, radii, spacing } from '../theme';
 import { useAuth } from '../context/AuthContext';
 import { SocketProvider, useChatSocket } from '../context/SocketContext';
@@ -23,6 +23,7 @@ function ChatScreenInner() {
   const [draft, setDraft] = useState('');
   const listRef = useRef<FlatList<ChatMessage>>(null);
   const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const insets = useSafeAreaInsets();
 
   const handleChangeText = useCallback(
     (text: string) => {
@@ -55,7 +56,7 @@ function ChatScreenInner() {
   return (
     <SignalBackground>
       <StatusBar style="light" />
-      <SafeAreaView style={styles.flex} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.flex} edges={['top']}>
         <View style={styles.header}>
           <View>
             <Text style={styles.headerTitle}>Frequency</Text>
@@ -87,7 +88,7 @@ function ChatScreenInner() {
           )}
         </View>
 
-        <View style={styles.composer}>
+        <View style={[styles.composer, { paddingBottom: spacing.sm + insets.bottom }]}>
           <TextInput
             value={draft}
             onChangeText={handleChangeText}
