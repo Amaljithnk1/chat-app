@@ -1,5 +1,6 @@
 # Frequency — Real-Time Chat App
 
+A real-time chat application with a mobile client and a Node.js backend.
 
 - **Frontend:** React Native (Expo, TypeScript) — mobile chat interface
 - **Backend:** Node.js + Express + Socket.IO — real-time messaging server
@@ -125,61 +126,12 @@ Your phone and computer need to be on the same Wi-Fi network.
 
 ---
 
-## 4. Pushing this to GitHub
-
-From the `chat-app` folder:
-
-```bash
-git init
-git add .
-git commit -m "Initial commit: real-time chat app (React Native + Node/Socket.IO)"
-git branch -M main
-git remote add origin <your-empty-github-repo-url>
-git push -u origin main
-```
-
-Both `backend/.gitignore` and `frontend/.gitignore` already exclude
-`node_modules`, build artifacts, and `.env` files, so the repo stays clean.
-
----
-
-## 5. Building an APK
-
-I can't generate a signed `.apk` file directly (no Android build toolchain
-available in the environment I built this in), but Expo's free **EAS
-Build** service can produce one for you in about 10–15 minutes, with no
-Android Studio required:
-
-```bash
-cd frontend
-npm install -g eas-cli
-eas login                  # create a free Expo account if you don't have one
-eas build:configure        # choose "Android" when prompted
-eas build --platform android --profile preview
-```
-
-When it finishes, EAS gives you a download link for the `.apk` directly —
-save that file and drop it into the shared Google Drive folder.
-
-> Note: before building for a real device, update `API_BASE_URL` in
-> `src/config.ts` to point at a backend the phone can actually reach (e.g.
-> a deployed backend, or your computer's LAN IP if testing on the same
-> network) — a build can't reach `localhost` on your laptop.
-
-If you'd rather not set up EAS, an alternative that satisfies the
-assignment's fallback option is a short screen recording of the app
-running in Expo Go or an emulator, showing two sessions messaging each
-other in real time with timestamps visible.
-
----
-
-## 6. What's deliberately simple (and why)
+## 4. What's deliberately simple (and why)
 
 - **In-memory storage:** no database, so history resets on server restart.
   Swapping in Postgres/Mongo would only require changing `backend/src/store.js`.
-- **Dummy login:** any non-empty username "logs in," no password or
-  persistence. This matches the assignment's bonus requirement ("can be
-  dummy for now").
-- **No message editing/deleting/read-receipts:** out of scope for the
-  brief; the focus per the assignment is structure, client-server
-  communication, and core send/receive functionality.
+- **Dummy login:** any non-empty username logs in — no password or backend
+  persistence. Intentional, to keep auth out of scope for now.
+- **No message editing/deleting/read-receipts:** kept out of scope to keep
+  the core send/receive flow, structure, and client-server communication
+  easy to follow.
