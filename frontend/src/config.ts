@@ -9,5 +9,5 @@
  * `ifconfig`/`ipconfig getifaddr en0` on macOS). Your phone and computer
  * must be on the same Wi-Fi network.
  */
-export const API_BASE_URL = 'http://192.168.1.120:4000';
+export const API_BASE_URL = 'https://chat-app-plzy.onrender.com';
 export const SOCKET_URL = API_BASE_URL;
